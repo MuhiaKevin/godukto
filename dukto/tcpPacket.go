@@ -1,45 +1,37 @@
-package networking
+package dukto
 
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
-	"log"
-	"net"
 	"os"
 	"strings"
 )
 
 func GetCode(filename string) []byte {
-	var full bytes.Buffer
+	var codePacket bytes.Buffer
 
 	buf := make([]byte, 8)
 	head := make([]byte, 1)
 
 	file, err := os.Open(filename)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	CheckErr(err)
 
 	fi, err := file.Stat()
-	if err != nil {
-		log.Fatal(err)
-	}
+	CheckErr(err)
 
 	fileSize := fi.Size()
 	binary.LittleEndian.PutUint32(buf, uint32(fileSize))
 
-	full.Write(head)
-	full.Write(buf)
+	codePacket.Write(head)
+	codePacket.Write(buf)
 
-	return full.Bytes()
-
+	return codePacket.Bytes()
 }
 
 func CreatePacketHeader(filename string) []byte {
 	var header bytes.Buffer
-	var full bytes.Buffer
+	var fullHeaderPacket bytes.Buffer
 	head := make([]byte, 7)
 
 	filenameSlice := strings.Split(filename, "/")
@@ -54,26 +46,9 @@ func CreatePacketHeader(filename string) []byte {
 
 	tail := code
 
-	full.Write(header.Bytes())
-	full.Write(fileNameBytes)
-	full.Write(tail)
+	fullHeaderPacket.Write(header.Bytes())
+	fullHeaderPacket.Write(fileNameBytes)
+	fullHeaderPacket.Write(tail)
 
-	return full.Bytes()
-
-}
-
-func main() {
-	fileName := "/home/muhia/Documents/dotfiles-hyprland-main.zip"
-
-	conn, err := net.Dial("tcp", "localhost:4644")
-	defer conn.Close()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	packet := CreatePacketHeader(fileName)
-	// packet := getCode(fileName)
-
-	conn.Write(packet)
+	return fullHeaderPacket.Bytes()
 }

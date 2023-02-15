@@ -1,19 +1,17 @@
 package main
 
-import "github.com/MuhiaKevin/godukto/networking"
-
-// var wg sync.WaitGroup
-
-// func main() {
-// 	wg.Add(2)
-// 	go networking.SendBroadcast(&wg)
-
-// 	go networking.SendFile(&wg)
-
-// 	wg.Wait()
-// }
+import (
+	"flag"
+	"godukto/dukto"
+)
 
 func main() {
-	networking.SendFile()
+	file := flag.String("f", "", "path to file")
+	flag.Parse()
 
+	if *file == "" {
+		panic("Enter a file")
+	}
+
+	dukto.SendFile(*file)
 }

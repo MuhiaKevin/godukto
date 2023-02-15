@@ -1,19 +1,18 @@
-package networking
+package dukto
 
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"net"
 	"time"
 )
 
-func buildBroadCastMesage() []byte {
+func buildUdpBroadCastMesage() []byte {
 	header := make([]byte, 1)
 
 	var messageBuf bytes.Buffer
 	header[0] = 1
-	message := "Muya at Muya (Golang)"
+	message := "Chifu wa Kizunu (Golang)"
 
 	messageBuf.Write(header)
 	messageBuf.Write([]byte(message))
@@ -21,25 +20,19 @@ func buildBroadCastMesage() []byte {
 	return messageBuf.Bytes()
 }
 
-// func SendBroadcast(wg *sync.WaitGroup) {
-func SendBroadcast() {
-	message := buildBroadCastMesage()
+func SendUdpBroadcast() {
+	message := buildUdpBroadCastMesage()
 	conn, err := net.DialUDP("udp", nil, &net.UDPAddr{
 		IP:   net.IPv4bcast,
 		Port: 4644,
 	})
 	defer conn.Close()
 
-	if err != nil {
-		log.Println(err)
-	}
+	CheckErr(err)
 
-	// defer wg.Done()
 	for {
 		_, err := conn.Write(message)
-		if err != nil {
-			log.Println(err)
-		}
+		CheckErr(err)
 
 		fmt.Println("Sent broadcast message: ", string(message))
 		time.Sleep(3 * time.Second)

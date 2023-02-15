@@ -1,3 +1,3 @@
-module github.com/MuhiaKevin/godukto
+module godukto
 
 go 1.20
