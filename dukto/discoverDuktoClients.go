@@ -5,8 +5,7 @@ import (
 	"net"
 )
 
-func udpBroadcastListen() {
-
+func UdpBroadcastListen() {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		IP:   net.IPv4zero,
 		Port: 4644,
@@ -18,6 +17,7 @@ func udpBroadcastListen() {
 	}
 
 	defer conn.Close()
+	fmt.Println("Listening for udp broadcast packets on port 4644")
 
 	for {
 		buf := make([]byte, 1024)
@@ -26,6 +26,9 @@ func udpBroadcastListen() {
 			fmt.Println("Error reading broadcast:", err)
 			return
 		}
-		fmt.Println("Received broadcast message:", string(buf[:n]))
+		fmt.Printf("Received broadcast message: %v\n", string(buf[:n]))
+
+		// write to channel
+
 	}
 }
