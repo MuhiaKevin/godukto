@@ -20,19 +20,23 @@ func buildUdpBroadCastMesage() []byte {
 	return messageBuf.Bytes()
 }
 
-func SendUdpBroadcast() {
+func SendUdpBroadcast() error {
 	message := buildUdpBroadCastMesage()
 	conn, err := net.DialUDP("udp", nil, &net.UDPAddr{
 		IP:   net.IPv4bcast,
 		Port: 4644,
 	})
-	defer conn.Close()
 
-	CheckErr(err)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
 
 	for {
 		_, err := conn.Write(message)
-		CheckErr(err)
+		if err != nil {
+			return err
+		}
 
 		fmt.Println("Sent broadcast message: ", string(message))
 		time.Sleep(3 * time.Second)

@@ -7,18 +7,21 @@ import (
 	"strings"
 )
 
-func GetCode(filename string) []byte {
+func GetCode(filename string) ([]byte, error) {
 	var codePacket bytes.Buffer
 
 	buf := make([]byte, 8)
 	head := make([]byte, 1)
 
 	file, err := os.Open(filename)
-
-	CheckErr(err)
+	if err != nil {
+		return []byte{}, err
+	}
 
 	fi, err := file.Stat()
-	CheckErr(err)
+	if err != nil {
+		return []byte{}, err
+	}
 
 	fileSize := fi.Size()
 	binary.LittleEndian.PutUint32(buf, uint32(fileSize))
@@ -26,10 +29,10 @@ func GetCode(filename string) []byte {
 	codePacket.Write(head)
 	codePacket.Write(buf)
 
-	return codePacket.Bytes()
+	return codePacket.Bytes(), nil
 }
 
-func CreatePacketHeader(filename string) []byte {
+func CreatePacketHeader(filename string) ([]byte, error) {
 	var header bytes.Buffer
 	var fullHeaderPacket bytes.Buffer
 	head := make([]byte, 7)
@@ -38,7 +41,10 @@ func CreatePacketHeader(filename string) []byte {
 	correctName := filenameSlice[len(filenameSlice)-1]
 	fileNameBytes := []byte(correctName)
 
-	code := GetCode(filename)
+	code, err := GetCode(filename)
+	if err != nil {
+		return []byte{}, err
+	}
 
 	head[0] = 1
 	header.Write(head)
@@ -50,5 +56,5 @@ func CreatePacketHeader(filename string) []byte {
 	fullHeaderPacket.Write(fileNameBytes)
 	fullHeaderPacket.Write(tail)
 
-	return fullHeaderPacket.Bytes()
+	return fullHeaderPacket.Bytes(), nil
 }

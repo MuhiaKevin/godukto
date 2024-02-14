@@ -1,21 +1,21 @@
 package main
 
 import (
+	"flag"
 	"godukto/dukto"
+	"log"
 )
 
 func main() {
-	// host := flag.String("h", "192.168.1.195", "set host")
-	// file := flag.String("f", "", "path to file")
+	host := flag.String("h", "192.168.1.195", "set host")
+	file := flag.String("f", "", "path to file")
 
-	// flag.Parse()
+	flag.Parse()
 
-	// if *file == "" {
-	// 	panic("Enter a file")
-	// }
-
-	// dukto.SendFile(*file, *host)
-	dukto.UdpBroadcastListen()
+	if err := dukto.SendFile(*file, *host); err != nil {
+		log.Fatal(err)
+	}
+	// dukto.UdpBroadcastListen()
 }
 
 // var wg sync.WaitGroup
@@ -32,3 +32,21 @@ func main() {
 // 	}
 
 // 	wg.Wait()
+
+// package main
+//
+// import "fmt"
+//
+// func main() {
+// 	m := make(map[string]string)
+//
+// 	m["Laptop"] = "192.168.1.195:4644"
+// 	m["Laptop"] = "192.168.1.195:4644"
+// 	m["Laptop"] = "192.168.1.195:4644"
+// 	m["Laptop"] = "192.168.1.195:4644"
+// 	m["android"] = "192.168.1.149:4644"
+// 	m["android"] = "192.168.1.149:4644"
+// 	m["android"] = "192.168.1.149:4644"
+// 	m["android"] = "192.168.1.149:4644"
+// 	fmt.Println(m)
+// }

@@ -9,34 +9,35 @@ import (
 
 const port = 4644
 
-func CheckErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func SendFile(fileName string, host string) {
+func SendFile(fileName string, host string) error {
 	client := fmt.Sprintf("%s:%d", host, port)
 
 	file, err := os.Open(fileName)
-
-	CheckErr(err)
-
+	if err != nil {
+		return err
+	}
 	defer file.Close()
 
 	conn, err := net.Dial("tcp", client)
+	if err != nil {
+		return err
+	}
 	defer conn.Close()
 
-	CheckErr(err)
-
-	packet := CreatePacketHeader(fileName)
+	packet, err := CreatePacketHeader(fileName)
+	if err != nil {
+		return err
+	}
 
 	conn.Write(packet)
 
 	_, err = io.Copy(conn, file)
-	CheckErr(err)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("File sent successfully")
+	return nil
 }
 
 func ReceiveFile() {
