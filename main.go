@@ -1,37 +1,54 @@
+/*
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+*/
 package main
 
 import (
-	"flag"
+	// "godukto/cmd"
 	"godukto/dukto"
 	"log"
+	"net"
 )
 
 func main() {
-	host := flag.String("h", "192.168.1.195", "set host")
-	file := flag.String("f", "", "path to file")
+	// cmd.Execute()
 
-	flag.Parse()
+	peers := make(chan net.IP)
+	go dukto.UdpBroadcastListen(peers)
 
-	if err := dukto.SendFile(*file, *host); err != nil {
-		log.Fatal(err)
-	}
-	// dukto.UdpBroadcastListen()
+	peerIP :=  <- peers
+	log.Println("Received data from broadcat: ", peerIP.String())
+
+	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
+
 }
 
-// var wg sync.WaitGroup
+// func main() {
+// 	host := flag.string("h", "192.168.1.195", "set host")
+// 	file := flag.string("f", "", "path to file")
+//
+// 	flag.parse()
+//
+// 	if err := dukto.sendfile(*file, *host); err != nil {
+// 		log.fatal(err)
+// 	}
+// 	// dukto.udpbroadcastlisten()
+// }
+
+// var wg sync.waitgroup
 // 	// 192.168.1.149
 // 	ips := []string{"192.168.1.195", "192.168.1.149"}
 
 // 	for _, item := range ips {
-// 		wg.Add(1)
+// 		wg.add(1)
 
-// 		go func(ipAdd string) {
-// 			dukto.SendFile(*file, ipAdd)
-// 			wg.Done()
+// 		go func(ipadd string) {
+// 			dukto.sendfile(*file, ipadd)
+// 			wg.done()
 // 		}(item)
 // 	}
 
-// 	wg.Wait()
+// 	wg.wait()
 
 // package main
 //
@@ -40,13 +57,13 @@ func main() {
 // func main() {
 // 	m := make(map[string]string)
 //
-// 	m["Laptop"] = "192.168.1.195:4644"
-// 	m["Laptop"] = "192.168.1.195:4644"
-// 	m["Laptop"] = "192.168.1.195:4644"
-// 	m["Laptop"] = "192.168.1.195:4644"
+// 	m["laptop"] = "192.168.1.195:4644"
+// 	m["laptop"] = "192.168.1.195:4644"
+// 	m["laptop"] = "192.168.1.195:4644"
+// 	m["laptop"] = "192.168.1.195:4644"
 // 	m["android"] = "192.168.1.149:4644"
 // 	m["android"] = "192.168.1.149:4644"
 // 	m["android"] = "192.168.1.149:4644"
 // 	m["android"] = "192.168.1.149:4644"
-// 	fmt.Println(m)
-// }
+// 	fmt.println(m)
+//
