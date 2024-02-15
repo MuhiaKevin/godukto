@@ -7,7 +7,12 @@ import (
 	// "strings"
 )
 
-func UdpBroadcastListen(peers chan net.IP) {
+type DuktoClient struct {
+	Name string 
+	IP string
+}
+
+func UdpBroadcastListen(peers chan DuktoClient) {
 	conn, err := net.ListenUDP("udp", &net.UDPAddr{
 		IP:   net.IPv4zero,
 		Port: 4644,
@@ -36,12 +41,18 @@ func UdpBroadcastListen(peers chan net.IP) {
 			fmt.Printf("Device with IP %v is saying %s\n",  udpAddr.String(), message)
 		} else {
 			// fmt.Printf("Received broadcast message: %v with ip address: %v\n", string(buf[:n]), udpAddr.String())
-			fmt.Printf("Found  device %v\n", message)
+			// fmt.Printf("Found  device %v\n", message)
 			// fmt.Printf("Device sent Message: %v\n", udpAddr.String())
 			// fmt.Printf("Received broadcast message: %v with ip address: %v\n", message, udpAddr.String())
 			// write to channel
-
-			peers <- udpAddr.IP
+			
+			// dont send ip addres 127.0.0.1
+			if udpAddr.IP.String() != "127.0.0.1" { 
+				peers <- DuktoClient{
+					Name: message,
+					IP: udpAddr.IP.String(),
+				}
+			}
 		}
 	}
 }

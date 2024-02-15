@@ -4,16 +4,10 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	// "errors"
-	// "fmt"
 	"fmt"
 	"godukto/dukto"
 	"log"
-	"net"
 	"os"
-
-	// "godukto/dukto"
-	// "log"
 
 	"github.com/spf13/cobra"
 )
@@ -26,29 +20,28 @@ var sendfileCmd = &cobra.Command{
 	Run: start,
 }
 
-// type DuktoClient struct {
-// 	Name string 
-// 	IP string
-// }
-
 func start(cmd *cobra.Command, args []string) {
+	// chcek that the file has been set
 	if len(args) == 0 || len(args) > 1{
-		log.Fatal("ERROR: set file a single to send")
+		log.Fatal("ERROR: set a single file  to send")
 	}
-	// var duktoClientsSeverd  map[string]string
+
+	// list of clients that have been detected
+	duktoClientsSeverd := make(map[string]string)
 
 	// get filename
 	file := args[0]
 
+	// check if file actually exists
 	// if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
 	if _, err := os.Stat(file); err != nil {
 		log.Fatal(err)
 	} 
 
-	// channel that gets dukto clients
-	peers := make(chan net.IP)
+	// channel that gets dukto clients from broadcast
+	peers := make(chan dukto.DuktoClient)
 
-	// discover other dukto apps
+	// discover other dukto apps and write to the peer channel
 	go dukto.UdpBroadcastListen(peers)
 	
 
@@ -63,15 +56,35 @@ func start(cmd *cobra.Command, args []string) {
 
 
 	for {
-		peerIP, ok := <- peers
+		// message from udpBroadcast
+		duktoClient, ok := <- peers
+
+		// check if channel is closed 
 		if ok == false {
-			log.Println("Received data from broadcat: ", peerIP.String())
+			log.Println("Received data from broadcat: ", duktoClient.IP)
 		} else {
 			// have a list of dukto clients you have already sent them the file 
 			// if you have already sent them the file then dont send the file to them again
 			// else send it to them
-			go dukto.SendFile(file, peerIP.String())
-			fmt.Println(peerIP, ok)
+
+			// check if the dukto client is in the list
+			if v, ok := duktoClientsSeverd[duktoClient.IP]; ok {
+				fmt.Printf("%v ALready Exists\n", v)
+			} else {
+				// if not then start a goroutine and  send the file to the dukto client
+				go dukto.SendFile(file, duktoClient.IP)
+			}
+			
+
+			// if ipAddr, ok := duktoClientsSeverd[duktoClient.Name]; ok {
+			// 	go dukto.SendFile(file, ipAddr)
+			// }
+
+			// add the dukto client to the list of served dukto clients
+			duktoClientsSeverd[duktoClient.IP] = duktoClient.Name
+
+			// fmt.Println(duktoClientsSeverd)
+			// fmt.Println("Clients available", len(duktoClientsSeverd))
 		}
 	}
 }
