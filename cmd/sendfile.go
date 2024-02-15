@@ -26,7 +26,9 @@ var sendfileCmd = &cobra.Command{
 }
 
 func start(cmd *cobra.Command, args []string) {
-	// fmt.Println("sendfile called")
+	if len(args) == 0 || len(args) > 1{
+		log.Fatal("ERROR: set file to send")
+	}
 
 	// get filename
 	file := args[0]
