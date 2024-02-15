@@ -6,6 +6,7 @@ package cmd
 import (
 	// "errors"
 	// "fmt"
+	"fmt"
 	"godukto/dukto"
 	"log"
 	"net"
@@ -25,10 +26,16 @@ var sendfileCmd = &cobra.Command{
 	Run: start,
 }
 
+// type DuktoClient struct {
+// 	Name string 
+// 	IP string
+// }
+
 func start(cmd *cobra.Command, args []string) {
 	if len(args) == 0 || len(args) > 1{
-		log.Fatal("ERROR: set file to send")
+		log.Fatal("ERROR: set file a single to send")
 	}
+	// var duktoClientsSeverd  map[string]string
 
 	// get filename
 	file := args[0]
@@ -46,13 +53,27 @@ func start(cmd *cobra.Command, args []string) {
 	
 
 	// read ip address from channel
-	peerIP :=  <- peers
-	// make sure message received is not bye so that it doesnt send a file to a closed tcp connection
-	// log.Println("Received data from broadcat: ", peerIP.String())
+	// peerIP :=  <- peers
+	// // make sure message received is not bye so that it doesnt send a file to a closed tcp connection
+	// // log.Println("Received data from broadcat: ", peerIP.String())
+	//
+	// // sendfile
+	// // dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
+	// dukto.SendFile(file, peerIP.String())
 
-	// sendfile
-	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
-	dukto.SendFile(file, peerIP.String())
+
+	for {
+		peerIP, ok := <- peers
+		if ok == false {
+			log.Println("Received data from broadcat: ", peerIP.String())
+		} else {
+			// have a list of dukto clients you have already sent them the file 
+			// if you have already sent them the file then dont send the file to them again
+			// else send it to them
+			go dukto.SendFile(file, peerIP.String())
+			fmt.Println(peerIP, ok)
+		}
+	}
 }
 
 func init() {

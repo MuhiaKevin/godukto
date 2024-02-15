@@ -33,7 +33,7 @@ func UdpBroadcastListen(peers chan net.IP) {
 		message := string(buf[:n])
 
 		if strings.Contains(message, "Bye Bye") {
-			fmt.Printf("Device with IP %v is saying %s",  udpAddr.String(), message)
+			fmt.Printf("Device with IP %v is saying %s\n",  udpAddr.String(), message)
 		} else {
 			// fmt.Printf("Received broadcast message: %v with ip address: %v\n", string(buf[:n]), udpAddr.String())
 			fmt.Printf("Found  device %v\n", message)
