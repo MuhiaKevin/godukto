@@ -4,20 +4,20 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	// "godukto/cmd"
-	"godukto/dukto"
-	"log"
-	"net"
+	"godukto/cmd"
+	// "godukto/dukto"
+	// "log"
+	// "net"
 )
 
 func main() {
-	// cmd.Execute()
+	cmd.Execute()
 
-	peers := make(chan net.IP)
-	go dukto.UdpBroadcastListen(peers)
-
-	peerIP :=  <- peers
-	log.Println("Received data from broadcat: ", peerIP.String())
+	// peers := make(chan net.IP)
+	// go dukto.UdpBroadcastListen(peers)
+	//
+	// peerIP :=  <- peers
+	// log.Println("Received data from broadcat: ", peerIP.String())
 
 	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
 

@@ -1,11 +1,18 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	// "errors"
+	// "fmt"
+	"godukto/dukto"
+	"log"
+	"net"
+	"os"
+
+	// "godukto/dukto"
+	// "log"
 
 	"github.com/spf13/cobra"
 )
@@ -15,9 +22,35 @@ var sendfileCmd = &cobra.Command{
 	Use:   "sendfile",
 	Short: "Send file over lan",
 	Long: `Send file over lan`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sendfile called")
-	},
+	Run: start,
+}
+
+func start(cmd *cobra.Command, args []string) {
+	// fmt.Println("sendfile called")
+
+	// get filename
+	file := args[0]
+
+	// if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(file); err != nil {
+		log.Fatal(err)
+	} 
+
+	// channel that gets dukto clients
+	peers := make(chan net.IP)
+
+	// discover other dukto apps
+	go dukto.UdpBroadcastListen(peers)
+	
+
+	// read ip address from channel
+	peerIP :=  <- peers
+	// make sure message received is not bye so that it doesnt send a file to a closed tcp connection
+	log.Println("Received data from broadcat: ", peerIP.String())
+
+	// sendfile
+	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
+	dukto.SendFile(file, peerIP.String())
 }
 
 func init() {
