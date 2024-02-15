@@ -12,15 +12,6 @@ import (
 
 func main() {
 	cmd.Execute()
-
-	// peers := make(chan net.IP)
-	// go dukto.UdpBroadcastListen(peers)
-	//
-	// peerIP :=  <- peers
-	// log.Println("Received data from broadcat: ", peerIP.String())
-
-	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())
-
 }
 
 // func main() {

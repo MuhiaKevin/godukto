@@ -3,7 +3,6 @@ package dukto
 import (
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"os"
 )
@@ -32,7 +31,7 @@ func SendFile(fileName string, host string) error {
 
 	conn.Write(packet)
 
-	log.Println("Sending file ", fileName)
+	fmt.Println("Sending file ", fileName)
 
 	_, err = io.Copy(conn, file)
 	if err != nil {

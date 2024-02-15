@@ -3,6 +3,8 @@ package dukto
 import (
 	"fmt"
 	"net"
+	"strings"
+	// "strings"
 )
 
 func UdpBroadcastListen(peers chan net.IP) {
@@ -17,7 +19,8 @@ func UdpBroadcastListen(peers chan net.IP) {
 	}
 
 	defer conn.Close()
-	fmt.Println("Listening for udp broadcast packets on port 4644")
+	// fmt.Println("Listening for udp broadcast packets on port 4644")
+	fmt.Println("Waiting for other dukto applications...")
 
 	for {
 		buf := make([]byte, 1024)
@@ -27,9 +30,18 @@ func UdpBroadcastListen(peers chan net.IP) {
 			return
 		}
 
-		fmt.Printf("Received broadcast message: %v with ip address: %v\n", string(buf[:n]), udpAddr.String())
-		// write to channel
+		message := string(buf[:n])
 
-		peers <- udpAddr.IP
+		if strings.Contains(message, "Bye Bye") {
+			fmt.Printf("Device with IP %v is saying %s",  udpAddr.String(), message)
+		} else {
+			// fmt.Printf("Received broadcast message: %v with ip address: %v\n", string(buf[:n]), udpAddr.String())
+			fmt.Printf("Found  device %v\n", message)
+			// fmt.Printf("Device sent Message: %v\n", udpAddr.String())
+			// fmt.Printf("Received broadcast message: %v with ip address: %v\n", message, udpAddr.String())
+			// write to channel
+
+			peers <- udpAddr.IP
+		}
 	}
 }

@@ -46,7 +46,7 @@ func start(cmd *cobra.Command, args []string) {
 	// read ip address from channel
 	peerIP :=  <- peers
 	// make sure message received is not bye so that it doesnt send a file to a closed tcp connection
-	log.Println("Received data from broadcat: ", peerIP.String())
+	// log.Println("Received data from broadcat: ", peerIP.String())
 
 	// sendfile
 	// dukto.SendFile("./POTENTIAL_NEW_CONFIGS.zip", peerIP.String())

@@ -22,3 +22,6 @@ $ godukto folder pictures/
 ```sh
 $ godukto receive 
 ```
+
+- Add Progress bar when sending a file to other dukto apps
+- Show waiting animation when waiting for other dukto apps to show up
