@@ -1,5 +1,6 @@
 # godukto
 https://github.com/aler9/howto-udp-broadcast-golang
+https://www.digitalocean.com/community/tutorials/how-to-use-the-cobra-package-in-go
 Dukto commandline app written in Go!
 
 Explore gum, charm and others to imporve cli
