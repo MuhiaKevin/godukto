@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -16,14 +15,12 @@ import (
 func main() {
 	folderName := "/home/muhia/Downloads/Videos" // make sure the folder doesnt end with "/"
 
-
-	// get absolute path of folder
+	// get absolute path of folder i.e Music, Videos, etc instead of the full path
 	filenameSlice := strings.Split(folderName, "/")
 	rootName := filenameSlice[len(filenameSlice)-1]
 
 
-	initialPacket, filesAndTheirPacket, err := createInitialPacket(folderName)
-	// _, filesAndTheirPacket, err := createInitialPacket(folderName)
+	initialPacket, filesAndTheirPacket, err := createFolderInformation(folderName)
 
 
 	// tcp conn send intial packet
@@ -34,44 +31,52 @@ func main() {
 
 	defer conn.Close()
 
+	// the information in the packet  will be  the folders total size, the number of files in the folder + 1 and the name of the folder
 	_, err = conn.Write(initialPacket)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// stream file
+	// walkthrough the directory using the fullpath
 	err = filepath.Walk(folderName, func(path string, info os.FileInfo, err error) error {
+		// check file is not a directory
 		if !info.IsDir() {
-			filenameSlice := strings.Split(path, "/") // separate files into slash
-			folderNamePost := slices.Index(filenameSlice,rootName ) 
+			// split the full path of the file into a slice of strings
+			// objective is to get the path of the file relative to the root folder
+			folderNamesSlice := strings.Split(path, "/") // separate files into slash
 
-			// get the files packet
-			newPath := strings.Join(filenameSlice[folderNamePost:], "/")
+			// TODO: change this so that we don't need to check the index of the folder in the  each and every time
+			posOfRootFolderInSlice := slices.Index(folderNamesSlice,rootName ) // get index of the root file from the file's full path
+
+			// get each file's packet data that will be sentfirst to the dukto client before streaming the entire file
+			newPath := strings.Join(folderNamesSlice[posOfRootFolderInSlice:], "/")
+			// get the file's packet data
 			filePack := filesAndTheirPacket[newPath]
 
-			fmt.Println(filePack)
-
-			// open the file 
+			// open the file for reading
 			file, err := os.Open(path)
 			if err != nil {
 				return err
 			}
 
 
-			// tcp send the file's packet
+			// tcp send the file's packet first 
 			_, err = conn.Write(filePack)
 			if err != nil {
 				log.Fatal(err)
 			}
 
 
-			// stream the tcp packet
+			// then using the same tcp connection stream the entire file.
+			// the tcp connection will be reused to send all the files in the folder
 
 			_, err = io.Copy(conn, file)
 			if err != nil {
 				return err
 			}
 
+			// close this file handler once the file has been sent
 			file.Close()
 		}
 
@@ -82,14 +87,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// fmt.Println(filesAndTheirPacket)
+	log.Println("Folder sent Successfully!!!")
 
 }
 
 // structure of intial packet 
 // number of bytes( 8 bytes) + total size of all files in the folder in little endian (8 bytes ) + folder/directory name +  A byte after name of folder (1 byte) + Ending part of the packet that is filled with 8 255 intergers ( 8 bytes)
 
-func createInitialPacket(folderName string) ([]byte, map[string][]byte, error) {
+func createFolderInformation(folderName string) ([]byte, map[string][]byte, error) {
 	// will be used to concatenate all the sections of the packet
 	var intialPacket bytes.Buffer
 
@@ -169,6 +174,9 @@ func getFolderInfo(folderName, rootFolderName string) (int64, int64, map[string]
 	return numOfFiles,totalSize,filesAndTheirPacket , err
 }
 
+// STRUCTURE OF FILE PACKET
+// Path to file from the mainfolder + 1 byte + size of the file ( 8 bytes)
+
 
 func getFileFromFolderName(folderName, path string, fileSize int64, filesAndtheirPackets map[string][]byte )  {
 	filenameSlice := strings.Split(path, "/") // separate files into slash
@@ -187,9 +195,6 @@ func getFileFromFolderName(folderName, path string, fileSize int64, filesAndthei
 	binary.LittleEndian.PutUint64(totalSizeBytes, uint64(fileSize))
 	filePacket.Write(totalSizeBytes)
 
-	// fmt.Println(filePacket.Bytes())
 
 	filesAndtheirPackets[newPath] = filePacket.Bytes()
-
-	// sendData(filePacket.Bytes())
 }
