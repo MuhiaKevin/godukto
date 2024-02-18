@@ -63,8 +63,12 @@ func CreatePacketHeader(filename string) ([]byte, error) {
 
 	tail := code
 
-	fullHeaderPacket.Write(header.Bytes())
+	// first 16 bytes includes 8 bytes but the first byte is 
+	// second 8 bytes include the size of the file
+	fullHeaderPacket.Write(header.Bytes()) 
+	// next part includes the name of the file
 	fullHeaderPacket.Write(fileNameBytes)
+	// the last past is the bytes that information on the size of the file
 	fullHeaderPacket.Write(tail)
 
 	// to get filename from bytes
