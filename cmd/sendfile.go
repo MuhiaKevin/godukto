@@ -38,6 +38,16 @@ func startSendFile(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	} 
 
+	// perdiocally send udp broadcast message to make other dukto clients aware of you
+	// err := dukto.SendUdpBroadcast()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// } 
+
+	// perdiocally send udp broadcast message to make other dukto clients aware of you
+	// TODO: Find out why sometimes not working
+	go dukto.SendUdpBroadcast()
+
 	// channel that gets dukto clients from broadcast
 	peers := make(chan dukto.DuktoClient)
 
@@ -74,7 +84,7 @@ func startSendFile(cmd *cobra.Command, args []string) {
 				// if not then start a goroutine and  send the file to the dukto client
 				go dukto.SendFile(file, duktoClient.IP)
 			}
-			
+
 
 			// if ipAddr, ok := duktoClientsSeverd[duktoClient.Name]; ok {
 			// 	go dukto.SendFile(file, ipAddr)

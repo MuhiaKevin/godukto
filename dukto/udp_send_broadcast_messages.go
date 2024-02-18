@@ -39,6 +39,6 @@ func SendUdpBroadcast() error {
 		}
 
 		fmt.Println("Sent broadcast message: ", string(message))
-		time.Sleep(3 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
