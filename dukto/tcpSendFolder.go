@@ -12,7 +12,7 @@ import (
 )
 
 
-func SendFolder(folderName string, host string) error {
+func SendFolder(folderName string, host string, initialPacket []byte, filesAndTheirPacket map[string][]byte ) error {
 	// folderName := "/home/muhia/Downloads/Videos" // make sure the folder doesnt end with "/"
 	client := fmt.Sprintf("%s:%d", host, port)
 	fmt.Println(folderName)
@@ -21,9 +21,6 @@ func SendFolder(folderName string, host string) error {
 	filenameSlice := strings.Split(folderName, "/")
 	rootName := filenameSlice[len(filenameSlice)-1]
 
-
-	// TODO: Get inital packet first while waiting for a dukto client to be discovered
-	initialPacket, filesAndTheirPacket, err := CreateFolderInformation(folderName)
 
 	// tcp conn send intial packet
 	conn, err := net.Dial("tcp", client) 

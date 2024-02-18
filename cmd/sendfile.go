@@ -72,7 +72,7 @@ func startSendFile(cmd *cobra.Command, args []string) {
 				fmt.Printf("%v ALready Exists\n", v)
 			} else {
 				// if not then start a goroutine and  send the file to the dukto client
-				go dukto.SendFolder(file, duktoClient.IP)
+				go dukto.SendFile(file, duktoClient.IP)
 			}
 			
 

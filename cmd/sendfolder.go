@@ -39,6 +39,14 @@ func startSendFolder(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	} 
 
+
+	// TODO: Get inital packet first while waiting for a dukto client to be discovered
+	initialPacket, filesAndTheirPacket, err := dukto.CreateFolderInformation(folder)
+	if  err != nil {
+		log.Fatal(err)
+	} 
+
+
 	// channel that gets dukto clients from broadcast
 	peers := make(chan dukto.DuktoClient)
 
@@ -73,7 +81,7 @@ func startSendFolder(cmd *cobra.Command, args []string) {
 				fmt.Printf("%v ALready Exists\n", v)
 			} else {
 				// if not then start a goroutine and  send the file to the dukto client
-				go dukto.SendFolder(folder, duktoClient.IP)
+				go dukto.SendFolder(folder, duktoClient.IP, initialPacket, filesAndTheirPacket)
 			}
 			
 
