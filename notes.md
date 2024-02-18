@@ -15,3 +15,10 @@ Sending folder
 start Zellij themes 14 (20 in decimal) length 13
 start Justo 0b (14 in decimal) length 5
 start testDir1 04 (4 in decimal) length 8
+
+
+
+
+2. Sending the files
+ - get the path to the filename relative to root folder
+   path to filename + 1 byte + size of file + then stream the contents of the file
