@@ -1,6 +1,3 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -12,29 +9,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// sendfileCmd represents the sendfile command
-var sendfileCmd = &cobra.Command{
-	Use:   "sendfile",
-	Short: "Send file over lan",
-	Long: `Send file over lan`,
-	Run: startSendFile,
+// sendfolderCmd represents the sendfolder command
+var sendfolderCmd = &cobra.Command{
+	Use:   "sendfolder",
+	Short: "Go dukto send a folder",
+	Long: "Go dukto send a folder. Make sure folder doesn't end with a black slash",
+	Run: startSendFolder,
 }
 
-func startSendFile(cmd *cobra.Command, args []string) {
+
+
+func startSendFolder(cmd *cobra.Command, args []string) {
 	// chcek that the file has been set
 	if len(args) == 0 || len(args) > 1{
-		log.Fatal("ERROR: set a single file  to send")
+		log.Fatal("ERROR: set a folder  to send")
 	}
+
+	// TODO: send udp broadcast message to tell dukto clients you are there
 
 	// list of clients that have been detected
 	duktoClientsSeverd := make(map[string]string)
 
 	// get filename
-	file := args[0]
+	folder := args[0]
 
 	// check if file actually exists
 	// if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-	if _, err := os.Stat(file); err != nil {
+	if _, err := os.Stat(folder); err != nil {
 		log.Fatal(err)
 	} 
 
@@ -72,7 +73,7 @@ func startSendFile(cmd *cobra.Command, args []string) {
 				fmt.Printf("%v ALready Exists\n", v)
 			} else {
 				// if not then start a goroutine and  send the file to the dukto client
-				go dukto.SendFolder(file, duktoClient.IP)
+				go dukto.SendFolder(folder, duktoClient.IP)
 			}
 			
 
@@ -90,15 +91,15 @@ func startSendFile(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	rootCmd.AddCommand(sendfileCmd)
+	rootCmd.AddCommand(sendfolderCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// sendfileCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// sendfolderCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// sendfileCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// sendfolderCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
