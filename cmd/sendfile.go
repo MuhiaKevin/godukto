@@ -4,7 +4,6 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"godukto/dukto"
 	"log"
 	"os"
@@ -14,29 +13,20 @@ import (
 
 // sendfileCmd represents the sendfile command
 var sendfileCmd = &cobra.Command{
-	Use:   "sendfile",
-	Short: "Send file over lan",
-	Long: `Send file over lan`,
+	Use:   "sendfiles",
+	Short: "Send one or more files to a dukto client or to multiple dukto clients",
+	Long: `Send one file or multiple files to one or more dukto clients`,
 	Run: startSendFile,
 }
 
 func startSendFile(cmd *cobra.Command, args []string) {
 	// chcek that the file has been set
-	if len(args) == 0 || len(args) > 1{
+	if len(args) == 0 {
 		log.Fatal("ERROR: set a single file  to send")
 	}
 
 	// list of clients that have been detected
 	duktoClientsSeverd := make(map[string]string)
-
-	// get filename
-	file := args[0]
-
-	// check if file actually exists
-	// if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-	if _, err := os.Stat(file); err != nil {
-		log.Fatal(err)
-	} 
 
 	// perdiocally send udp broadcast message to make other dukto clients aware of you
 	// err := dukto.SendUdpBroadcast()
@@ -78,11 +68,22 @@ func startSendFile(cmd *cobra.Command, args []string) {
 			// else send it to them
 
 			// check if the dukto client is in the list
-			if v, ok := duktoClientsSeverd[duktoClient.IP]; ok {
-				fmt.Printf("%v ALready Exists\n", v)
-			} else {
+			if _, ok := duktoClientsSeverd[duktoClient.IP]; !ok {
 				// if not then start a goroutine and  send the file to the dukto client
-				go dukto.SendFile(file, duktoClient.IP)
+				// send one or many files
+				if len(args) > 1 {
+					files := args[1:] 
+
+					go dukto.SendMultipleFiles(files, duktoClient.IP)
+				} else {
+					file := args[0]
+
+					if _, err := os.Stat(file); err != nil {
+						log.Fatal(err)
+					} 
+
+					go dukto.SendFile(file, duktoClient.IP)
+				}
 			}
 
 
