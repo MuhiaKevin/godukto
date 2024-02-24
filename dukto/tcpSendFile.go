@@ -33,6 +33,7 @@ func SendFile(fileName string, host string) error {
 
 	fmt.Println("Sending file ", fileName)
 
+	// https://itnext.io/optimizing-large-file-transfers-in-linux-with-go-an-exploration-of-tcp-and-syscall-ebe1b93fb72f
 	_, err = io.Copy(conn, file)
 	if err != nil {
 		return err
