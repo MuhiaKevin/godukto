@@ -25,7 +25,9 @@ func SendMultipleFiles(files []string, host string) error {
 			log.Fatal(err)
 		}
 
-		totalSize = totalSize + int(fs.Size())
+		if !fs.IsDir() {
+			totalSize = totalSize + int(fs.Size())
+		}
 		file.Close()
 	}
 
@@ -49,16 +51,19 @@ func SendMultipleFiles(files []string, host string) error {
 			log.Fatal(err)
 		}
 
-		filenameSlice := strings.Split(filename, "/")
-		correctName := filenameSlice[len(filenameSlice)-1]
+		if !fs.IsDir() {
+			filenameSlice := strings.Split(filename, "/")
+			correctName := filenameSlice[len(filenameSlice)-1]
 
-		fileSize := fs.Size()
+			fileSize := fs.Size()
 
-		filenamePack := CreateFilePacket(correctName, int(fileSize))
+			filenamePack := CreateFilePacket(correctName, int(fileSize))
 
-		conn.Write(filenamePack)
+			conn.Write(filenamePack)
 
-		io.Copy(conn, file)
+			io.Copy(conn, file)
+		}
+
 
 		file.Close()
 	}

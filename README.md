@@ -12,7 +12,6 @@ Explore gum, charm and others to imporve cli
 
 # Bugs
 - Error when sending a folder. It crashes when sending some files
-- Crashes when sending multiple files in a folder that has some folders
 
 
 ```sh
