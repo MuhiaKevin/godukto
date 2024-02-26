@@ -5,6 +5,7 @@ import (
 	"godukto/dukto"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +32,7 @@ func startSendFolder(cmd *cobra.Command, args []string) {
 	duktoClientsSeverd := make(map[string]string)
 
 	// get filename
-	folder := args[0]
+	folder := strings.TrimSuffix(args[0], "/")
 
 	// check if file actually exists
 	// if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {

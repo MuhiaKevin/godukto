@@ -33,3 +33,4 @@ $ godukto receive
 ### Some Resources
 - https://github.com/aler9/howto-udp-broadcast-golang
 - https://www.digitalocean.com/community/tutorials/how-to-use-the-cobra-package-in-go
+- https://medium.com/trendyol-tech/golang-what-is-broken-pipe-error-tcp-http-connections-and-pools-3988b79f28e5
