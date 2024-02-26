@@ -6,7 +6,7 @@ files:
 
 
 folder:
-	go build -o bin/godukto && bin/godukto sendfiles  ~/Downloads/Videos
+	go build -o bin/godukto && bin/godukto sendfolder  ~/Downloads/Videos/
 
 build:
 	go build -o bin/godukto

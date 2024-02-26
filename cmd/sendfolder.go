@@ -31,6 +31,11 @@ func startSendFolder(cmd *cobra.Command, args []string) {
 	// list of clients that have been detected
 	duktoClientsSeverd := make(map[string]string)
 
+
+	// perdiocally send udp broadcast message to make other dukto clients aware of you
+	// TODO: Find out why sometimes not working
+	go dukto.SendUdpBroadcast()
+
 	// get filename
 	folder := strings.TrimSuffix(args[0], "/")
 
