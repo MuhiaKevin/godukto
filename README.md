@@ -11,7 +11,8 @@ Explore gum, charm and others to imporve cli
 - [ ] Show waiting animation when waiting for other dukto apps to show up
 
 # Bugs
-- Error when sending a folder. It crashes when sending some files
+- Error when sending a folder. It crashes when sending some folders.
+  - The dukto client receiving the file closes connection when sending some folder
 
 
 ```sh
